@@ -60,7 +60,6 @@ const IconWand = (props) => (
   </svg>
 );
 const IconMegaphoneMini = (props) => <IconMegaphone width="18" height="18" {...props} />;
-const IconRocketMini = (props) => <IconRocket width="18" height="18" {...props} />;
 const IconGraph = (props) => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
     <path d="M3 3v18h18"/><path d="M7 15l3-3 4 4 5-6"/>
@@ -108,8 +107,8 @@ const FancyCursor = () => {
           transition: "transform 120ms ease, width 120ms ease, height 120ms ease, left 40ms linear, top 40ms linear",
         }}
       />
-      {/* Let the native cursor appear over inputs so typing feels normal */}
-      <style jsx global>{`
+      {/* Native cursor appears over inputs so typing feels normal */}
+      <style>{`
         body { cursor: none; }
         input, textarea, select { cursor: text; }
         input:hover, textarea:hover, select:hover { cursor: text; }
@@ -159,7 +158,7 @@ const Confetti = ({ show }) => {
           }}
         />
       ))}
-      <style jsx>{`
+      <style>{`
         @keyframes fall { to { transform: translateY(110vh); opacity: 0.9; } }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
@@ -195,6 +194,51 @@ function useTheme() {
     document.documentElement.classList.toggle("theme-light", next === "light");
   };
   return { theme, toggle };
+}
+
+/* ---------- Themed background (dot grid + noise) ---------- */
+function BackgroundSkin() {
+  // Noise via SVG data URI (light), dot grid via CSS radial-gradient
+  const noiseSVG =
+    `url("data:image/svg+xml;utf8,` +
+    encodeURIComponent(
+      `<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'>
+         <filter id='n'>
+           <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/>
+           <feColorMatrix type='saturate' values='0'/>
+         </filter>
+         <rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/>
+       </svg>`
+    ) +
+    `")`;
+
+  return (
+    <>
+      {/* Dot grid */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-20"
+        style={{
+          backgroundImage:
+            "radial-gradient(var(--gridColor) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          backgroundPosition: "0 0",
+          opacity: "var(--gridOpacity)",
+        }}
+      />
+      {/* Noise overlay */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10"
+        style={{
+          backgroundImage: noiseSVG,
+          backgroundSize: "240px 240px",
+          mixBlendMode: "overlay",
+          opacity: "var(--noiseOpacity)",
+        }}
+      />
+    </>
+  );
 }
 
 /* ---------- Data ---------- */
@@ -284,7 +328,6 @@ const DropRow = ({ item, i }) => {
         className="w-full flex items-center justify-between gap-4 p-5 text-left transition"
         aria-expanded={open}
         data-cursor="aim"
-        style={{ background: "transparent" }}
       >
         <div className="flex items-center gap-4">
           <img
@@ -293,9 +336,9 @@ const DropRow = ({ item, i }) => {
             className="h-12 w-12 rounded-lg object-cover"
             style={{ border: "1px solid var(--ring)" }}
           />
-          <div className="font-bold text-lg">{item.title}</div>
+          <div className="font-bold text-lg" style={{ color: "var(--text)" }}>{item.title}</div>
         </div>
-        <div className="text-sm" style={{ opacity: 0.8 }}>{open ? "Close −" : "Open +"}</div>
+        <div className="text-sm" style={{ opacity: 0.8, color: "var(--text)" }}>{open ? "Close −" : "Open +"}</div>
       </button>
 
       <div
@@ -307,7 +350,7 @@ const DropRow = ({ item, i }) => {
           opacity: open ? 1 : 0,
         }}
       >
-        <p className="text-sm leading-relaxed" style={{ opacity: 0.9 }}>{item.description}</p>
+        <p className="text-sm leading-relaxed" style={{ opacity: 0.9, color: "var(--text)" }}>{item.description}</p>
 
         {/* Fit-to-size (no crop) + padded frame */}
         <div className="w-full rounded-xl p-2" style={{ background: "var(--frame)", border: "1px solid var(--ring)" }}>
@@ -404,7 +447,7 @@ export default function Home() {
       </Head>
 
       {/* Global theme variables (dark default, light overrides) */}
-      <style jsx global>{`
+      <style>{`
         :root {
           --bg: #0a0a0a;
           --text: #ffffff;
@@ -412,6 +455,9 @@ export default function Home() {
           --surface: rgba(255,255,255,0.05);
           --frame: rgba(0,0,0,0.30);
           --ring: rgba(255,255,255,0.10);
+          --gridColor: rgba(255,255,255,0.06);
+          --gridOpacity: 1;
+          --noiseOpacity: 0.04;
         }
         .theme-light {
           --bg: #ffffff;
@@ -420,9 +466,15 @@ export default function Home() {
           --surface: rgba(0,0,0,0.04);
           --frame: rgba(0,0,0,0.04);
           --ring: rgba(0,0,0,0.10);
+          --gridColor: rgba(0,0,0,0.06);
+          --gridOpacity: 0.9;
+          --noiseOpacity: 0.06;
         }
         body { background: var(--bg) !important; color: var(--text) !important; }
       `}</style>
+
+      {/* Themed background */}
+      <BackgroundSkin />
 
       {/* Cursor + Easter eggs overlays */}
       <FancyCursor />
@@ -440,7 +492,7 @@ export default function Home() {
             Heplink
           </div>
           <nav className="hidden sm:flex items-center gap-3">
-            <a href="#work" className="px-3 py-1 rounded-xl" data-cursor="aim" style={{ background: "transparent" }}>Work</a>
+            <a href="#work" className="px-3 py-1 rounded-xl" data-cursor="aim">Work</a>
             <a href="#services" className="px-3 py-1 rounded-xl" data-cursor="aim">What we do</a>
             <a href="#approach" className="px-3 py-1 rounded-xl" data-cursor="aim">Approach</a>
             <a href="#contact" className="px-3 py-1 rounded-xl" data-cursor="aim">Contact</a>
@@ -518,169 +570,4 @@ export default function Home() {
                 <span key={`m4-${k}`} className="inline-flex items-center font-bold text-black rounded-full px-3 py-1" data-cursor="aim"
                       style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>Strategy</span>,
                 <span key={`m5-${k}`} className="inline-flex items-center font-bold text-black rounded-full px-3 py-1" data-cursor="aim"
-                      style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>Socials</span>,
-              ])}
-            </div>
-            <style jsx>{`
-              .marquee-track { will-change: transform; animation: heplink-marquee 22s linear infinite; }
-              @keyframes heplink-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-            `}</style>
-          </div>
-        </div>
-      </section>
-
-      {/* WHO WE ARE (interactive tabs) */}
-      <AboutInteractive />
-
-      {/* WORK */}
-      <section id="work" className="py-12 sm:py-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* section hero banner */}
-          <div className="relative h-[220px] sm:h-[300px] lg:h-[340px] w-full overflow-hidden rounded-3xl mb-6">
-            <img src="/images/work-people.jpg" alt="Our work hero" className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,.45)" }} />
-            <div className="relative z-10 h-full w-full flex items-end">
-              <h2 className="p-4 sm:p-6 font-black" style={{ fontSize: "clamp(26px, 4.5vw, 40px)" }}>
-                Our <GradientText>work</GradientText>
-              </h2>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {works.map((item, i) => <DropRow key={item.title} item={item} i={i} />)}
-          </div>
-        </div>
-      </section>
-
-      {/* WHAT WE DO (with hover effects + icons) */}
-      <section id="services" className="py-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-black">What we <GradientText>do</GradientText></h2>
-          <p className="mt-3 max-w-2xl" style={{ color: "var(--mutedText)" }}>Retainers from £1k–£3k/month. Projects priced to scope. No nonsense.</p>
-          <div className="mt-8 grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {services.map((s) => {
-              const Ico = s.icon;
-              return (
-                <div
-                  key={s.title}
-                  className="card group rounded-3xl p-6 transition"
-                  data-cursor="aim"
-                  style={{
-                    background: "var(--surface)",
-                    border: "1px solid var(--ring)",
-                    boxShadow: "0 0 0 rgba(0,0,0,0)",
-                  }}
-                  onMouseEnter={(e)=>{ e.currentTarget.style.boxShadow = "0 20px 40px rgba(255,0,0,0.08)"; }}
-                  onMouseLeave={(e)=>{ e.currentTarget.style.boxShadow = "0 0 0 rgba(0,0,0,0)"; }}
-                >
-                  <div className="flex items-center gap-3">
-                    <Ico style={{ color: BRAND_LIGHT }} />
-                    <h3 className="font-bold text-lg">{s.title}</h3>
-                  </div>
-                  <p className="mt-2" style={{ color: "var(--mutedText)" }}>{s.desc}</p>
-                  <ul className="mt-4 space-y-2 text-sm" style={{ opacity: 0.9 }}>
-                    {s.points.map((p) => <li key={p}>• {p}</li>)}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* OUR APPROACH (match services styling, no red border) */}
-      <section id="approach" className="py-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-black">Our <GradientText>approach</GradientText></h2>
-          <div className="mt-8 grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            {steps.map((s) => {
-              const Ico = s.icon;
-              return (
-                <div
-                  key={s.k}
-                  className="card rounded-3xl p-6 transition"
-                  data-cursor="aim"
-                  style={{
-                    background: "var(--surface)",
-                    border: "1px solid var(--ring)",
-                    boxShadow: "0 0 0 rgba(0,0,0,0)",
-                  }}
-                  onMouseEnter={(e)=>{ e.currentTarget.style.boxShadow = "0 20px 40px rgba(255,0,0,0.08)"; }}
-                  onMouseLeave={(e)=>{ e.currentTarget.style.boxShadow = "0 0 0 rgba(0,0,0,0)"; }}
-                >
-                  <div className="flex items-center gap-2 text-sm" style={{ opacity: 0.9 }}>
-                    <Ico style={{ color: BRAND_LIGHT }} />
-                    <span>{s.k}</span>
-                  </div>
-                  <p className="mt-2 text-sm">{s.t}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT */}
-      <section id="contact" className="py-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 md:grid-cols-2">
-          <div>
-            <h3 className="text-3xl font-black">Tell us what you’re building</h3>
-            <p className="mt-2" style={{ color: "var(--mutedText)" }}>We’ll reply within a day. If we can’t help, we’ll say so straight.</p>
-            <ul className="mt-4 space-y-2 text-sm" style={{ color: "var(--mutedText)" }}>
-              <li>hello@heplink.co</li>
-              <li>07410 567500</li>
-              <li>Sunderland, UK</li>
-            </ul>
-          </div>
-          <form
-            onSubmit={(e) => { e.preventDefault(); alert("Thanks! We’ll be in touch."); }}
-            className="rounded-2xl p-6 grid gap-3"
-            style={{ background: "var(--surface)", border: "1px solid var(--ring)" }}
-          >
-            <label className="text-sm">Name
-              <input required className="mt-1 w-full rounded-xl p-3 outline-none"
-                     style={{ background: "rgba(0,0,0,0.40)", border: "1px solid var(--ring)", color: "var(--text)" }} />
-            </label>
-            <label className="text-sm">Email
-              <input required type="email" className="mt-1 w-full rounded-xl p-3 outline-none"
-                     style={{ background: "rgba(0,0,0,0.40)", border: "1px solid var(--ring)", color: "var(--text)" }} />
-            </label>
-            <label className="text-sm">Budget
-              <select className="mt-1 w-full rounded-xl p-3 outline-none"
-                      style={{ background: "rgba(0,0,0,0.40)", border: "1px solid var(--ring)", color: "var(--text)" }}>
-                <option>£1k–£2k/mo</option>
-                <option>£2k–£3k/mo</option>
-                <option>Project</option>
-              </select>
-            </label>
-            <label className="text-sm">What do you need?
-              <textarea rows={4} className="mt-1 w-full rounded-xl p-3 outline-none"
-                        placeholder="Go crazy. We like it."
-                        style={{ background: "rgba(0,0,0,0.40)", border: "1px solid var(--ring)", color: "var(--text)" }} />
-            </label>
-            <button
-              className="inline-flex items-center font-bold text-black rounded-full px-4 py-2"
-              style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}
-              type="submit"
-              data-cursor="aim"
-            >
-              Send
-            </button>
-          </form>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="py-10" style={{ borderTop: "1px solid var(--ring)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 font-extrabold">
-            <span className="h-5 w-5 rounded-md inline-block" style={{ backgroundImage: `linear-gradient(135deg, ${BRAND}, ${BRAND_LIGHT})` }} />
-            Heplink
-          </div>
-          <small>© {new Date().getFullYear()} Heplink Ltd. All rights reserved.</small>
-          <small>Made with taste, not templates.</small>
-        </div>
-      </footer>
-    </>
-  );
-}
+                      style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
