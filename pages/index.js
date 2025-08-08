@@ -18,6 +18,7 @@ const GradientText = ({ children }) => (
   </span>
 );
 
+// ----- DATA -----
 const works = [
   {
     title: "Durham WFC Kit Launch",
@@ -49,6 +50,38 @@ const works = [
   },
 ];
 
+const services = [
+  {
+    title: "Social Management",
+    desc: "Daily content, community, and reporting. Zero bland posts.",
+    points: ["Instagram, TikTok, YouTube", "Community replies & tone of voice", "Monthly insight decks"],
+  },
+  {
+    title: "Content Production",
+    desc: "Reels that travel. Short-form edits, shoots, graphics.",
+    points: ["Shoot days & agile edits", "Creator collabs", "Design systems & carousels"],
+  },
+  {
+    title: "Paid Social",
+    desc: "Performance with taste. We optimise for attention first.",
+    points: ["Full-funnel ads", "UGC + creator whitelisting", "Testing sprints & scale"],
+  },
+  {
+    title: "Strategy & Brand",
+    desc: "Positioning, narratives, and playbooks your team will use.",
+    points: ["Audience & culture mapping", "Messaging & hooks", "Campaign playbooks"],
+  },
+];
+
+const steps = [
+  { k: "01 — Discover", t: "We find out what ‘good’ looks like, your audience, and goals." },
+  { k: "02 — Plan", t: "Hooks, content pillars, and a calendar that’s fast to execute." },
+  { k: "03 — Make", t: "Shoot, edit, design. Small changes often to compound results." },
+  { k: "04 — Amplify", t: "Paid, creators, repurposing. Get it where attention lives." },
+  { k: "05 — Learn", t: "Monthly insights. Keep what works, cut what doesn’t." },
+];
+
+// ----- COMPONENTS -----
 const DropRow = ({ item, i }) => {
   const [open, setOpen] = useState(false);
   return (
@@ -81,17 +114,21 @@ const DropRow = ({ item, i }) => {
       <div
         className="grid gap-4 px-5 pb-5 border-t border-white/10 overflow-hidden transition-all"
         style={{
-          maxHeight: open ? 900 : 0,
+          maxHeight: open ? 1000 : 0,
           paddingTop: open ? 20 : 0,
           opacity: open ? 1 : 0,
         }}
       >
         <p className="text-sm opacity-90">{item.description}</p>
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-full h-56 object-cover rounded-xl"
-        />
+
+        {/* Fit-to-size (no crop) */}
+        <div className="w-full bg-black/30 rounded-xl ring-1 ring-white/10 p-2">
+          <img
+            src={item.image}
+            alt={item.title}
+            className="w-full max-h-[70vh] object-contain mx-auto rounded-lg"
+          />
+        </div>
       </div>
     </div>
   );
@@ -124,6 +161,12 @@ export default function Home() {
             <a href="#work" className="px-3 py-1 rounded-xl hover:bg-white/10">
               Work
             </a>
+            <a href="#services" className="px-3 py-1 rounded-xl hover:bg-white/10">
+              What we do
+            </a>
+            <a href="#approach" className="px-3 py-1 rounded-xl hover:bg-white/10">
+              Approach
+            </a>
             <a href="#contact" className="px-3 py-1 rounded-xl hover:bg-white/10">
               Contact
             </a>
@@ -131,12 +174,11 @@ export default function Home() {
         </div>
       </header>
 
-      {/* HERO (with background image) */}
+      {/* HERO */}
       <section
         id="home"
         className="relative min-h-[78vh] flex items-center justify-center text-center overflow-hidden"
       >
-        {/* Ensure your image exists at public/images/hero-phones.jpg */}
         <img
           src="/images/hero-phones.jpg"
           alt="Phones background"
@@ -154,51 +196,47 @@ export default function Home() {
             travel. Based in Sunderland. Working anywhere.
           </p>
 
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <a
-              href="#work"
-              className="pill animate-float"
-              style={{ animationDuration: "6s" }}
-            >
-              See our work →
-            </a>
-            <a
-              href="#contact"
-              className="px-4 py-2 rounded-xl border border-white/15 hover:bg-white/10"
-            >
-              Start a project
-            </a>
-          </div>
-
-          {/* marquee */}
-          <div className="mt-10 relative">
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-black via-transparent to-black" />
-            <div
-              className="flex gap-3 whitespace-nowrap text-zinc-200"
-              style={{
-                animation: "marquee 22s linear infinite",
-                willChange: "transform",
-              }}
-            >
+          {/* CLEAN, INFINITE MARQUEE — no black borders */}
+          <div className="mt-8 overflow-hidden">
+            <div className="marquee-track flex gap-3 whitespace-nowrap">
               {Array.from({ length: 2 }).flatMap((_, k) => [
-                <span key={`c1-${k}`} className="pill">Content</span>,
-                <span key={`c2-${k}`} className="pill">Fully Managed Marketing</span>,
-                <span key={`c3-${k}`} className="pill">Paid</span>,
-                <span key={`c4-${k}`} className="pill">Strategy</span>,
-                <span key={`c5-${k}`} className="pill">Socials</span>,
+                <span key={`m1-${k}`} className="inline-flex items-center font-bold text-black rounded-full px-3 py-1"
+                      style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
+                  Content
+                </span>,
+                <span key={`m2-${k}`} className="inline-flex items-center font-bold text-black rounded-full px-3 py-1"
+                      style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
+                  Fully Managed Marketing
+                </span>,
+                <span key={`m3-${k}`} className="inline-flex items-center font-bold text-black rounded-full px-3 py-1"
+                      style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
+                  Paid
+                </span>,
+                <span key={`m4-${k}`} className="inline-flex items-center font-bold text-black rounded-full px-3 py-1"
+                      style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
+                  Strategy
+                </span>,
+                <span key={`m5-${k}`} className="inline-flex items-center font-bold text-black rounded-full px-3 py-1"
+                      style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
+                  Socials
+                </span>,
               ])}
             </div>
+            <style jsx>{`
+              .marquee-track {
+                will-change: transform;
+                animation: heplink-marquee 22s linear infinite;
+              }
+              @keyframes heplink-marquee {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+              }
+            `}</style>
           </div>
-          <style jsx>{`
-            @keyframes marquee {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-          `}</style>
         </div>
       </section>
 
-      {/* WORK (with section hero image + dropdowns) */}
+      {/* WORK */}
       <section id="work" className="py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* section hero banner */}
@@ -219,6 +257,46 @@ export default function Home() {
           <div className="space-y-4">
             {works.map((item, i) => (
               <DropRow key={item.title} item={item} i={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT WE DO */}
+      <section id="services" className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-black">
+            What we <span className="gradient-text">do</span>
+          </h2>
+          <p className="mt-3 max-w-2xl text-zinc-300">
+            Retainers from £1k–£3k/month. Projects priced to scope. No nonsense.
+          </p>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {services.map((s) => (
+              <div key={s.title} className="rounded-3xl p-6 ring-1 ring-white/10 bg-white/5">
+                <h3 className="font-bold text-lg">{s.title}</h3>
+                <p className="mt-2 text-zinc-300">{s.desc}</p>
+                <ul className="mt-4 space-y-2 text-sm opacity-90 list-disc list-inside">
+                  {s.points.map((p) => <li key={p}>{p}</li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* OUR APPROACH (8th-grade wording) */}
+      <section id="approach" className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-black">
+            Our <span className="gradient-text">approach</span>
+          </h2>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            {steps.map((s) => (
+              <div key={s.k} className="rounded-3xl p-6 ring-1 ring-white/10 bg-white/5">
+                <div className="text-sm opacity-80">{s.k}</div>
+                <p className="mt-2 text-sm">{s.t}</p>
+              </div>
             ))}
           </div>
         </div>
@@ -276,7 +354,13 @@ export default function Home() {
                 placeholder="Go crazy. We like it."
               />
             </label>
-            <button className="pill w-fit" type="submit">Send</button>
+            <button
+              className="inline-flex items-center font-bold text-black rounded-full px-4 py-2"
+              style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}
+              type="submit"
+            >
+              Send
+            </button>
           </form>
         </div>
       </section>
