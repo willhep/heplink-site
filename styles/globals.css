@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base */
+html, body, #__next { height: 100%; }
+:root {
+  --brand: #ff0000;
+  --brandLight: #ff6666;
+}
+body {
+  background: #0a0a0a;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Background personality layers */
+.bg-dot-grid {
+  position: fixed; inset: 0; pointer-events: none; z-index: -40;
+  opacity: .14; color: #ffffff;
+  background-image:
+    radial-gradient(currentColor 1.2px, transparent 1.2px),
+    radial-gradient(currentColor 1.2px, transparent 1.2px);
+  background-position: 0 0, 10px 10px;
+  background-size: 20px 20px;
+}
+.bg-noise {
+  position: fixed; inset: 0; pointer-events: none; z-index: -30;
+  opacity: .16; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+}
+.bg-blobs::before,
+.bg-blobs::after {
+  content: ""; position: fixed; border-radius: 9999px; filter: blur(48px); z-index: -20;
+}
+.bg-blobs::before { width: 34rem; height: 34rem; top: -10rem; left: -7rem; background: var(--brand); opacity: .25; }
+.bg-blobs::after  { width: 38rem; height: 38rem; top: 14rem; right: -8rem; background: var(--brandLight); opacity: .2; }
+
+/* Utilities */
+.gradient-text {
+  background-image: linear-gradient(135deg, var(--brand), var(--brandLight));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* optional marquee helper if you need it in index.js */
+@keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
