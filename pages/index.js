@@ -19,11 +19,59 @@ const GradientText = ({ children }) => (
   </span>
 );
 
+/* ---------- Tiny inline icons (SVG) ---------- */
+const IconMegaphone = (props) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <path d="M3 10v4a2 2 0 0 0 2 2h1l3 4v-6h3l7 3V7l-7 3H9V6L6 10H5a2 2 0 0 0-2 2z"/>
+  </svg>
+);
+const IconCamera = (props) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <path d="M23 19V7l-7 4-7-4-7 4v12l7-4 7 4 7-4z"/>
+  </svg>
+);
+const IconRocket = (props) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <path d="M5 15c-1 3-3 4-3 4s1-2 4-3c0 0-1-3 2-6s6-2 6-2c1-3 3-4 3-4s-1 2-4 3c0 0 1 3-2 6s-6 2-6 2z"/>
+    <circle cx="14" cy="10" r="2"/>
+  </svg>
+);
+const IconBrain = (props) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <path d="M8 6a3 3 0 0 0-3 3v2a3 3 0 0 0 3 3v4a3 3 0 0 0 3 3"/>
+    <path d="M16 6a3 3 0 0 1 3 3v2a3 3 0 0 1-3 3v4a3 3 0 0 1-3 3"/>
+    <path d="M11 3a3 3 0 0 0-3 3"/>
+    <path d="M13 3a3 3 0 0 1 3 3"/>
+  </svg>
+);
+const IconTarget = (props) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/>
+  </svg>
+);
+const IconBulb = (props) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <path d="M9 18h6M10 22h4"/><path d="M7 10a5 5 0 1 1 10 0c0 2-1 3-2 4s-1 2-1 3H10c0-1 0-2-1-3s-2-2-2-4z"/>
+  </svg>
+);
+const IconWand = (props) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <path d="M4 20l10-10"/><path d="M12 4l1 3M19 9l3 1M16 3l1 1M3 16l1 1"/>
+  </svg>
+);
+const IconMegaphoneMini = (props) => <IconMegaphone width="18" height="18" {...props} />;
+const IconRocketMini = (props) => <IconRocket width="18" height="18" {...props} />;
+const IconGraph = (props) => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <path d="M3 3v18h18"/><path d="M7 15l3-3 4 4 5-6"/>
+  </svg>
+);
+
 /* ---------- Cursor (round follower) ---------- */
 function useCursorHoverFlag() {
   const [hovering, setHovering] = useState(false);
   useEffect(() => {
-    const sel = 'a, button, [data-cursor="aim"]';
+    const sel = 'a, button, [data-cursor="aim"], .card';
     const enter = () => setHovering(true);
     const leave = () => setHovering(false);
     const bind = () => document.querySelectorAll(sel).forEach(el => {
@@ -60,10 +108,12 @@ const FancyCursor = () => {
           transition: "transform 120ms ease, width 120ms ease, height 120ms ease, left 40ms linear, top 40ms linear",
         }}
       />
-      {/* accessibility: hide the native cursor over the page so the follower feels clean */}
+      {/* Let the native cursor appear over inputs so typing feels normal */}
       <style jsx global>{`
         body { cursor: none; }
-        a, button, [data-cursor="aim"] { cursor: none; }
+        input, textarea, select { cursor: text; }
+        input:hover, textarea:hover, select:hover { cursor: text; }
+        a, button, [data-cursor="aim"], .card { cursor: none; }
       `}</style>
     </>
   );
@@ -164,30 +214,34 @@ const services = [
     title: "Social Management",
     desc: "Daily content, community, and reporting. Zero bland posts.",
     points: ["Instagram, TikTok, YouTube", "Community replies & tone of voice", "Monthly insight decks"],
+    icon: IconMegaphone,
   },
   {
     title: "Content Production",
     desc: "Reels that travel. Short-form edits, shoots, graphics.",
     points: ["Shoot days & agile edits", "Creator collabs", "Design systems & carousels"],
+    icon: IconCamera,
   },
   {
     title: "Paid Social",
     desc: "Performance with taste. We optimise for attention first.",
     points: ["Full-funnel ads", "UGC + creator whitelisting", "Testing sprints & scale"],
+    icon: IconRocket,
   },
   {
     title: "Strategy & Brand",
     desc: "Positioning, narratives, and playbooks your team will use.",
     points: ["Audience & culture mapping", "Messaging & hooks", "Campaign playbooks"],
+    icon: IconBrain,
   },
 ];
 
 const steps = [
-  { k: "01 — Discover", t: "We find out what ‘good’ looks like, your audience, and goals." },
-  { k: "02 — Plan", t: "Hooks, content pillars, and a calendar that’s fast to execute." },
-  { k: "03 — Make", t: "Shoot, edit, design. Small changes often to compound results." },
-  { k: "04 — Amplify", t: "Paid, creators, repurposing. Get it where attention lives." },
-  { k: "05 — Learn", t: "Monthly insights. Keep what works, cut what doesn’t." },
+  { k: "01 — Discover", t: "We find out what ‘good’ looks like, your audience, and goals.", icon: IconBulb },
+  { k: "02 — Plan", t: "Hooks, content pillars, and a calendar that’s fast to execute.", icon: IconTarget },
+  { k: "03 — Make", t: "Shoot, edit, design. Small changes often to compound results.", icon: IconWand },
+  { k: "04 — Amplify", t: "Paid, creators, repurposing. Get it where attention lives.", icon: IconMegaphoneMini },
+  { k: "05 — Learn", t: "Monthly insights. Keep what works, cut what doesn’t.", icon: IconGraph },
 ];
 
 /* ---------- Work dropdown row ---------- */
@@ -245,6 +299,54 @@ const DropRow = ({ item, i }) => {
   );
 };
 
+/* ---------- About Tabs (interactive) ---------- */
+const aboutTabs = [
+  {
+    key: "focus",
+    label: "Our focus",
+    copy: "We’re social-first. We make content people actually watch and share, then build simple systems to do it again and again.",
+  },
+  {
+    key: "how",
+    label: "How we work",
+    copy: "Small team, fast feedback. Shoot days, quick edits, weekly wins. No fluff decks—just useful insights you’ll use.",
+  },
+  {
+    key: "proof",
+    label: "Proof",
+    copy: "Reels that travel, DMs that turn into sales, and reporting that tells you what to do next. That’s the game.",
+  },
+];
+
+function AboutInteractive() {
+  const [active, setActive] = useState("focus");
+  return (
+    <section className="py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-3xl sm:text-4xl font-black mb-4">
+          Who <GradientText>we are</GradientText>
+        </h2>
+        <div className="inline-flex rounded-2xl ring-1 ring-white/10 bg-white/5 p-1">
+          {aboutTabs.map(t => (
+            <button
+              key={t.key}
+              onClick={() => setActive(t.key)}
+              className={`px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base transition ${active === t.key ? "text-black" : "text-white/80"}`}
+              style={active === t.key ? { backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` } : {}}
+              data-cursor="aim"
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-5 mx-auto max-w-3xl text-zinc-200 leading-relaxed">
+          {aboutTabs.find(t => t.key === active)?.copy}
+        </p>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- Page ---------- */
 export default function Home() {
   const [confetti, setConfetti] = useState(false);
@@ -271,6 +373,7 @@ export default function Home() {
       <Head>
         <title>Heplink — Social-first marketing</title>
         <meta name="description" content="Heplink builds social-first brands people actually care about." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       {/* Cursor + Easter eggs overlays */}
@@ -278,7 +381,7 @@ export default function Home() {
       <ThemePulse show={pulse} />
       <Confetti show={confetti} />
 
-      {/* NAV */}
+      {/* NAV with sticky CTA */}
       <header className="sticky top-0 z-20 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 font-extrabold">
@@ -293,12 +396,21 @@ export default function Home() {
             <a href="#services" className="px-3 py-1 rounded-xl hover:bg-white/10" data-cursor="aim">What we do</a>
             <a href="#approach" className="px-3 py-1 rounded-xl hover:bg-white/10" data-cursor="aim">Approach</a>
             <a href="#contact" className="px-3 py-1 rounded-xl hover:bg-white/10" data-cursor="aim">Contact</a>
+            <a href="#contact" className="ml-2 hidden md:inline-flex items-center font-bold text-black rounded-full px-3 py-1" data-cursor="aim"
+               style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
+              Get in touch
+            </a>
           </nav>
+          {/* mobile CTA */}
+          <a href="#contact" className="sm:hidden inline-flex items-center font-bold text-black rounded-full px-3 py-1" data-cursor="aim"
+             style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
+            Get in touch
+          </a>
         </div>
       </header>
 
       {/* HERO */}
-      <section id="home" className="relative min-h-[78vh] flex items-center justify-center text-center overflow-hidden">
+      <section id="home" className="relative min-h-[68vh] sm:min-h-[78vh] flex items-center justify-center text-center overflow-hidden">
         <img
           src="/images/hero-phones.jpg"
           alt="Phones background"
@@ -306,16 +418,16 @@ export default function Home() {
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/65 via-black/30 to-black/65" />
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 py-16">
-          <h1 className="text-5xl sm:text-6xl font-black leading-tight">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 sm:py-16">
+          <h1 className="text-[9vw] sm:text-6xl font-black leading-tight">
             Building <GradientText>social-first</GradientText> brands that people actually give a <em>damn</em> about.
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-zinc-200">
+          <p className="mx-auto mt-4 sm:mt-5 max-w-2xl text-base sm:text-lg text-zinc-200">
             Social-native strategy, scroll-stopping content, and campaigns that travel. Based in Sunderland. Working anywhere.
           </p>
 
           {/* Clean infinite marquee */}
-          <div className="mt-8 overflow-hidden">
+          <div className="mt-6 sm:mt-8 overflow-hidden">
             <div className="marquee-track flex gap-3 whitespace-nowrap">
               {Array.from({ length: 2 }).flatMap((_, k) => [
                 <span key={`m1-${k}`} className="inline-flex items-center font-bold text-black rounded-full px-3 py-1" data-cursor="aim"
@@ -338,15 +450,18 @@ export default function Home() {
         </div>
       </section>
 
+      {/* WHO WE ARE (interactive tabs) */}
+      <AboutInteractive />
+
       {/* WORK */}
-      <section id="work" className="py-14">
+      <section id="work" className="py-12 sm:py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* section hero banner */}
-          <div className="relative h-[340px] w-full overflow-hidden rounded-3xl mb-6">
+          <div className="relative h-[220px] sm:h-[300px] lg:h-[340px] w-full overflow-hidden rounded-3xl mb-6">
             <img src="/images/work-people.jpg" alt="Our work hero" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-black/45" />
             <div className="relative z-10 h-full w-full flex items-end">
-              <h2 className="p-6 text-3xl sm:text-4xl font-black">
+              <h2 className="p-4 sm:p-6 text-2xl sm:text-4xl font-black">
                 Our <GradientText>work</GradientText>
               </h2>
             </div>
@@ -358,59 +473,64 @@ export default function Home() {
         </div>
       </section>
 
-      {/* WHAT WE DO (with hover effects) */}
-      <section id="services" className="py-16">
+      {/* WHAT WE DO (with hover effects + icons) */}
+      <section id="services" className="py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-black">What we <GradientText>do</GradientText></h2>
           <p className="mt-3 max-w-2xl text-zinc-300">Retainers from £1k–£3k/month. Projects priced to scope. No nonsense.</p>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {services.map((s) => (
-              <div
-                key={s.title}
-                className="group rounded-3xl p-6 ring-1 ring-white/10 bg-white/5 transition
-                           hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-500/10"
-                style={{ outline: "2px solid transparent", outlineOffset: "2px" }}
-                onMouseEnter={(e)=>{ e.currentTarget.style.outlineColor = `${BRAND_LIGHT}55`; }}
-                onMouseLeave={(e)=>{ e.currentTarget.style.outlineColor = `transparent`; }}
-                data-cursor="aim"
-              >
-                <h3 className="font-bold text-lg">{s.title}</h3>
-                <p className="mt-2 text-zinc-300">{s.desc}</p>
-                <ul className="mt-4 space-y-2 text-sm opacity-90 list-disc list-inside">
-                  {s.points.map((p) => <li key={p}>{p}</li>)}
-                </ul>
-              </div>
-            ))}
+          <div className="mt-8 grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {services.map((s) => {
+              const Ico = s.icon;
+              return (
+                <div
+                  key={s.title}
+                  className="card group rounded-3xl p-6 ring-1 ring-white/10 bg-white/5 transition
+                             hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-500/10"
+                  data-cursor="aim"
+                >
+                  <div className="flex items-center gap-3">
+                    <Ico style={{ color: BRAND_LIGHT }} />
+                    <h3 className="font-bold text-lg">{s.title}</h3>
+                  </div>
+                  <p className="mt-2 text-zinc-300">{s.desc}</p>
+                  <ul className="mt-4 space-y-2 text-sm opacity-90 list-disc list-inside">
+                    {s.points.map((p) => <li key={p}>{p}</li>)}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* OUR APPROACH (with hover effects) */}
-      <section id="approach" className="py-16">
+      {/* OUR APPROACH (match services styling, no red border) */}
+      <section id="approach" className="py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-black">Our <GradientText>approach</GradientText></h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            {steps.map((s, idx) => (
-              <div
-                key={s.k}
-                className="rounded-3xl p-6 ring-1 ring-white/10 bg-white/5 transition
-                           hover:-translate-y-1 hover:bg-white/10 hover:shadow-2xl hover:shadow-red-500/10"
-                style={{
-                  borderImage: `linear-gradient(120deg, ${BRAND}55, ${BRAND_LIGHT}55) 1`,
-                  borderWidth: 1,
-                }}
-                data-cursor="aim"
-              >
-                <div className="text-sm opacity-80">{s.k}</div>
-                <p className="mt-2 text-sm">{s.t}</p>
-              </div>
-            ))}
+          <div className="mt-8 grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            {steps.map((s) => {
+              const Ico = s.icon;
+              return (
+                <div
+                  key={s.k}
+                  className="card rounded-3xl p-6 ring-1 ring-white/10 bg-white/5 transition
+                             hover:-translate-y-1 hover:bg-white/10 hover:shadow-2xl hover:shadow-red-500/10"
+                  data-cursor="aim"
+                >
+                  <div className="flex items-center gap-2 text-sm opacity-90">
+                    <Ico style={{ color: BRAND_LIGHT }} />
+                    <span>{s.k}</span>
+                  </div>
+                  <p className="mt-2 text-sm">{s.t}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* CONTACT */}
-      <section id="contact" className="py-16">
+      <section id="contact" className="py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 md:grid-cols-2">
           <div>
             <h3 className="text-3xl font-black">Tell us what you’re building</h3>
