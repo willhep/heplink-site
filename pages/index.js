@@ -177,6 +177,26 @@ const ThemePulse = ({ show }) => {
   );
 };
 
+/* ---------- Theme (dark/light) ---------- */
+function useTheme() {
+  const [theme, setTheme] = useState("dark");
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
+    const initial = saved === "light" ? "light" : "dark";
+    setTheme(initial);
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("theme-light", initial === "light");
+    }
+  }, []);
+  const toggle = () => {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    document.documentElement.classList.toggle("theme-light", next === "light");
+  };
+  return { theme, toggle };
+}
+
 /* ---------- Data ---------- */
 const works = [
   {
@@ -248,7 +268,7 @@ const steps = [
 const DropRow = ({ item, i }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className="bg-white/5 ring-1 ring-white/10 rounded-2xl overflow-hidden transition">
+    <div className="rounded-2xl overflow-hidden transition" style={{ background: "var(--surface)", border: "1px solid var(--ring)" }}>
       {/* gradient strip */}
       <div
         className="h-1 w-full"
@@ -261,33 +281,36 @@ const DropRow = ({ item, i }) => {
       />
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-white/[0.06] transition"
+        className="w-full flex items-center justify-between gap-4 p-5 text-left transition"
         aria-expanded={open}
         data-cursor="aim"
+        style={{ background: "transparent" }}
       >
         <div className="flex items-center gap-4">
           <img
             src={item.thumb}
             alt="preview"
-            className="h-12 w-12 rounded-lg object-cover ring-1 ring-white/10"
+            className="h-12 w-12 rounded-lg object-cover"
+            style={{ border: "1px solid var(--ring)" }}
           />
           <div className="font-bold text-lg">{item.title}</div>
         </div>
-        <div className="text-sm opacity-80">{open ? "Close −" : "Open +"}</div>
+        <div className="text-sm" style={{ opacity: 0.8 }}>{open ? "Close −" : "Open +"}</div>
       </button>
 
       <div
-        className="grid gap-4 px-5 pb-5 border-t border-white/10 overflow-hidden transition-all"
+        className="grid gap-4 px-5 pb-5 overflow-hidden transition-all"
         style={{
+          borderTop: "1px solid var(--ring)",
           maxHeight: open ? 1200 : 0,
           paddingTop: open ? 18 : 0,
           opacity: open ? 1 : 0,
         }}
       >
-        <p className="text-sm opacity-90 leading-relaxed">{item.description}</p>
+        <p className="text-sm leading-relaxed" style={{ opacity: 0.9 }}>{item.description}</p>
 
         {/* Fit-to-size (no crop) + padded frame */}
-        <div className="w-full bg-black/30 rounded-xl ring-1 ring-white/10 p-2">
+        <div className="w-full rounded-xl p-2" style={{ background: "var(--frame)", border: "1px solid var(--ring)" }}>
           <img
             src={item.image}
             alt={item.title}
@@ -326,20 +349,23 @@ function AboutInteractive() {
         <h2 className="text-3xl sm:text-4xl font-black mb-4">
           Who <GradientText>we are</GradientText>
         </h2>
-        <div className="inline-flex rounded-2xl ring-1 ring-white/10 bg-white/5 p-1">
+        <div className="inline-flex rounded-2xl p-1" style={{ background: "var(--surface)", border: "1px solid var(--ring)" }}>
           {aboutTabs.map(t => (
             <button
               key={t.key}
               onClick={() => setActive(t.key)}
-              className={`px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base transition ${active === t.key ? "text-black" : "text-white/80"}`}
-              style={active === t.key ? { backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` } : {}}
+              className={`px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base transition`}
+              style={active === t.key
+                ? { color: "#000", backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }
+                : { color: "var(--mutedText)" }
+              }
               data-cursor="aim"
             >
               {t.label}
             </button>
           ))}
         </div>
-        <p className="mt-5 mx-auto max-w-3xl text-zinc-200 leading-relaxed">
+        <p className="mt-5 mx-auto max-w-3xl leading-relaxed" style={{ color: "var(--mutedText)" }}>
           {aboutTabs.find(t => t.key === active)?.copy}
         </p>
       </div>
@@ -351,6 +377,7 @@ function AboutInteractive() {
 export default function Home() {
   const [confetti, setConfetti] = useState(false);
   const [pulse, setPulse] = useState(false);
+  const { theme, toggle } = useTheme();
 
   // Easter eggs
   useKonami(() => { setConfetti(true); setTimeout(() => setConfetti(false), 2200); });
@@ -376,12 +403,33 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
+      {/* Global theme variables (dark default, light overrides) */}
+      <style jsx global>{`
+        :root {
+          --bg: #0a0a0a;
+          --text: #ffffff;
+          --mutedText: #e5e5e5;
+          --surface: rgba(255,255,255,0.05);
+          --frame: rgba(0,0,0,0.30);
+          --ring: rgba(255,255,255,0.10);
+        }
+        .theme-light {
+          --bg: #ffffff;
+          --text: #0a0a0a;
+          --mutedText: #1f1f1f;
+          --surface: rgba(0,0,0,0.04);
+          --frame: rgba(0,0,0,0.04);
+          --ring: rgba(0,0,0,0.10);
+        }
+        body { background: var(--bg) !important; color: var(--text) !important; }
+      `}</style>
+
       {/* Cursor + Easter eggs overlays */}
       <FancyCursor />
       <ThemePulse show={pulse} />
       <Confetti show={confetti} />
 
-      {/* NAV with sticky CTA */}
+      {/* NAV with sticky CTA + Theme toggle */}
       <header className="sticky top-0 z-20 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 font-extrabold">
@@ -392,20 +440,44 @@ export default function Home() {
             Heplink
           </div>
           <nav className="hidden sm:flex items-center gap-3">
-            <a href="#work" className="px-3 py-1 rounded-xl hover:bg-white/10" data-cursor="aim">Work</a>
-            <a href="#services" className="px-3 py-1 rounded-xl hover:bg-white/10" data-cursor="aim">What we do</a>
-            <a href="#approach" className="px-3 py-1 rounded-xl hover:bg-white/10" data-cursor="aim">Approach</a>
-            <a href="#contact" className="px-3 py-1 rounded-xl hover:bg-white/10" data-cursor="aim">Contact</a>
+            <a href="#work" className="px-3 py-1 rounded-xl" data-cursor="aim" style={{ background: "transparent" }}>Work</a>
+            <a href="#services" className="px-3 py-1 rounded-xl" data-cursor="aim">What we do</a>
+            <a href="#approach" className="px-3 py-1 rounded-xl" data-cursor="aim">Approach</a>
+            <a href="#contact" className="px-3 py-1 rounded-xl" data-cursor="aim">Contact</a>
+
+            {/* Theme toggle */}
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="ml-2 inline-flex items-center rounded-full px-2 py-1 text-xs"
+              data-cursor="aim"
+              style={{ background: "var(--surface)", border: "1px solid var(--ring)", color: "var(--mutedText)" }}
+            >
+              {theme === "light" ? "Light" : "Dark"}
+            </button>
+
+            {/* CTA */}
             <a href="#contact" className="ml-2 hidden md:inline-flex items-center font-bold text-black rounded-full px-3 py-1" data-cursor="aim"
                style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
               Get in touch
             </a>
           </nav>
-          {/* mobile CTA */}
-          <a href="#contact" className="sm:hidden inline-flex items-center font-bold text-black rounded-full px-3 py-1" data-cursor="aim"
-             style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
-            Get in touch
-          </a>
+          {/* mobile: CTA + toggle */}
+          <div className="sm:hidden flex items-center gap-2">
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="inline-flex items-center rounded-full px-2 py-1 text-xs"
+              data-cursor="aim"
+              style={{ background: "var(--surface)", border: "1px solid var(--ring)", color: "var(--mutedText)" }}
+            >
+              {theme === "light" ? "Light" : "Dark"}
+            </button>
+            <a href="#contact" className="inline-flex items-center font-bold text-black rounded-full px-3 py-1" data-cursor="aim"
+               style={{ backgroundImage: `linear-gradient(90deg, ${BRAND}, ${BRAND_LIGHT})` }}>
+              Get in touch
+            </a>
+          </div>
         </div>
       </header>
 
@@ -416,13 +488,20 @@ export default function Home() {
           alt="Phones background"
           className="absolute inset-0 w-full h-full object-cover -z-10"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/65 via-black/30 to-black/65" />
+        <div className="absolute inset-0 -z-10" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,.65), rgba(0,0,0,.3), rgba(0,0,0,.65))" }} />
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 sm:py-16">
-          <h1 className="text-[9vw] sm:text-6xl font-black leading-tight">
+          <h1
+            className="font-black"
+            style={{
+              fontSize: "clamp(28px, 7.2vw, 64px)",
+              lineHeight: 1.1,
+              letterSpacing: "-0.01em",
+            }}
+          >
             Building <GradientText>social-first</GradientText> brands that people actually give a <em>damn</em> about.
           </h1>
-          <p className="mx-auto mt-4 sm:mt-5 max-w-2xl text-base sm:text-lg text-zinc-200">
+          <p className="mx-auto mt-4 sm:mt-5 max-w-2xl text-base sm:text-lg" style={{ color: "var(--mutedText)" }}>
             Social-native strategy, scroll-stopping content, and campaigns that travel. Based in Sunderland. Working anywhere.
           </p>
 
@@ -459,9 +538,9 @@ export default function Home() {
           {/* section hero banner */}
           <div className="relative h-[220px] sm:h-[300px] lg:h-[340px] w-full overflow-hidden rounded-3xl mb-6">
             <img src="/images/work-people.jpg" alt="Our work hero" className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-black/45" />
+            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,.45)" }} />
             <div className="relative z-10 h-full w-full flex items-end">
-              <h2 className="p-4 sm:p-6 text-2xl sm:text-4xl font-black">
+              <h2 className="p-4 sm:p-6 font-black" style={{ fontSize: "clamp(26px, 4.5vw, 40px)" }}>
                 Our <GradientText>work</GradientText>
               </h2>
             </div>
@@ -477,24 +556,30 @@ export default function Home() {
       <section id="services" className="py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-black">What we <GradientText>do</GradientText></h2>
-          <p className="mt-3 max-w-2xl text-zinc-300">Retainers from £1k–£3k/month. Projects priced to scope. No nonsense.</p>
+          <p className="mt-3 max-w-2xl" style={{ color: "var(--mutedText)" }}>Retainers from £1k–£3k/month. Projects priced to scope. No nonsense.</p>
           <div className="mt-8 grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {services.map((s) => {
               const Ico = s.icon;
               return (
                 <div
                   key={s.title}
-                  className="card group rounded-3xl p-6 ring-1 ring-white/10 bg-white/5 transition
-                             hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-500/10"
+                  className="card group rounded-3xl p-6 transition"
                   data-cursor="aim"
+                  style={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--ring)",
+                    boxShadow: "0 0 0 rgba(0,0,0,0)",
+                  }}
+                  onMouseEnter={(e)=>{ e.currentTarget.style.boxShadow = "0 20px 40px rgba(255,0,0,0.08)"; }}
+                  onMouseLeave={(e)=>{ e.currentTarget.style.boxShadow = "0 0 0 rgba(0,0,0,0)"; }}
                 >
                   <div className="flex items-center gap-3">
                     <Ico style={{ color: BRAND_LIGHT }} />
                     <h3 className="font-bold text-lg">{s.title}</h3>
                   </div>
-                  <p className="mt-2 text-zinc-300">{s.desc}</p>
-                  <ul className="mt-4 space-y-2 text-sm opacity-90 list-disc list-inside">
-                    {s.points.map((p) => <li key={p}>{p}</li>)}
+                  <p className="mt-2" style={{ color: "var(--mutedText)" }}>{s.desc}</p>
+                  <ul className="mt-4 space-y-2 text-sm" style={{ opacity: 0.9 }}>
+                    {s.points.map((p) => <li key={p}>• {p}</li>)}
                   </ul>
                 </div>
               );
@@ -513,11 +598,17 @@ export default function Home() {
               return (
                 <div
                   key={s.k}
-                  className="card rounded-3xl p-6 ring-1 ring-white/10 bg-white/5 transition
-                             hover:-translate-y-1 hover:bg-white/10 hover:shadow-2xl hover:shadow-red-500/10"
+                  className="card rounded-3xl p-6 transition"
                   data-cursor="aim"
+                  style={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--ring)",
+                    boxShadow: "0 0 0 rgba(0,0,0,0)",
+                  }}
+                  onMouseEnter={(e)=>{ e.currentTarget.style.boxShadow = "0 20px 40px rgba(255,0,0,0.08)"; }}
+                  onMouseLeave={(e)=>{ e.currentTarget.style.boxShadow = "0 0 0 rgba(0,0,0,0)"; }}
                 >
-                  <div className="flex items-center gap-2 text-sm opacity-90">
+                  <div className="flex items-center gap-2 text-sm" style={{ opacity: 0.9 }}>
                     <Ico style={{ color: BRAND_LIGHT }} />
                     <span>{s.k}</span>
                   </div>
@@ -534,8 +625,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 md:grid-cols-2">
           <div>
             <h3 className="text-3xl font-black">Tell us what you’re building</h3>
-            <p className="mt-2 text-zinc-300">We’ll reply within a day. If we can’t help, we’ll say so straight.</p>
-            <ul className="mt-4 space-y-2 text-sm text-zinc-300">
+            <p className="mt-2" style={{ color: "var(--mutedText)" }}>We’ll reply within a day. If we can’t help, we’ll say so straight.</p>
+            <ul className="mt-4 space-y-2 text-sm" style={{ color: "var(--mutedText)" }}>
               <li>hello@heplink.co</li>
               <li>07410 567500</li>
               <li>Sunderland, UK</li>
@@ -543,23 +634,29 @@ export default function Home() {
           </div>
           <form
             onSubmit={(e) => { e.preventDefault(); alert("Thanks! We’ll be in touch."); }}
-            className="rounded-2xl p-6 ring-1 ring-white/10 bg-white/5 grid gap-3"
+            className="rounded-2xl p-6 grid gap-3"
+            style={{ background: "var(--surface)", border: "1px solid var(--ring)" }}
           >
             <label className="text-sm">Name
-              <input required className="mt-1 w-full rounded-xl bg-black/40 p-3 ring-1 ring-white/10 outline-none focus:ring-2" />
+              <input required className="mt-1 w-full rounded-xl p-3 outline-none"
+                     style={{ background: "rgba(0,0,0,0.40)", border: "1px solid var(--ring)", color: "var(--text)" }} />
             </label>
             <label className="text-sm">Email
-              <input required type="email" className="mt-1 w-full rounded-xl bg-black/40 p-3 ring-1 ring-white/10 outline-none focus:ring-2" />
+              <input required type="email" className="mt-1 w-full rounded-xl p-3 outline-none"
+                     style={{ background: "rgba(0,0,0,0.40)", border: "1px solid var(--ring)", color: "var(--text)" }} />
             </label>
             <label className="text-sm">Budget
-              <select className="mt-1 w-full rounded-xl bg-black/40 p-3 ring-1 ring-white/10 outline-none focus:ring-2">
+              <select className="mt-1 w-full rounded-xl p-3 outline-none"
+                      style={{ background: "rgba(0,0,0,0.40)", border: "1px solid var(--ring)", color: "var(--text)" }}>
                 <option>£1k–£2k/mo</option>
                 <option>£2k–£3k/mo</option>
                 <option>Project</option>
               </select>
             </label>
             <label className="text-sm">What do you need?
-              <textarea rows={4} className="mt-1 w-full rounded-xl bg-black/40 p-3 ring-1 ring-white/10 outline-none focus:ring-2" placeholder="Go crazy. We like it." />
+              <textarea rows={4} className="mt-1 w-full rounded-xl p-3 outline-none"
+                        placeholder="Go crazy. We like it."
+                        style={{ background: "rgba(0,0,0,0.40)", border: "1px solid var(--ring)", color: "var(--text)" }} />
             </label>
             <button
               className="inline-flex items-center font-bold text-black rounded-full px-4 py-2"
@@ -574,7 +671,7 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-10 border-t border-white/10">
+      <footer className="py-10" style={{ borderTop: "1px solid var(--ring)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 font-extrabold">
             <span className="h-5 w-5 rounded-md inline-block" style={{ backgroundImage: `linear-gradient(135deg, ${BRAND}, ${BRAND_LIGHT})` }} />
