@@ -99,7 +99,7 @@ const FancyCursor = () => {
   return (
     <>
       <div
-        className="pointer-events-none fixed z-[100] rounded-full border border-white/60 backdrop-blur-sm mix-blend-difference"
+        className="custom-cursor pointer-events-none fixed z-[100] rounded-full border border-white/60 backdrop-blur-sm mix-blend-difference"
         style={{
           width: hovering ? 26 : 18,
           height: hovering ? 26 : 18,
@@ -108,12 +108,17 @@ const FancyCursor = () => {
           transition: "transform 120ms ease, width 120ms ease, height 120ms ease, left 40ms linear, top 40ms linear",
         }}
       />
-      {/* Let the native cursor appear over inputs so typing feels normal */}
+      {/* Desktop-only custom cursor; allow normal behaviour on touch */}
       <style jsx global>{`
-        body { cursor: none; }
-        input, textarea, select { cursor: text; }
-        input:hover, textarea:hover, select:hover { cursor: text; }
-        a, button, [data-cursor="aim"], .card { cursor: none; }
+        @media (pointer: fine) {
+          body { cursor: none; }
+          a, button, [data-cursor="aim"], .card { cursor: none; }
+          input, textarea, select { cursor: text; }
+        }
+        @media (pointer: coarse) {
+          .custom-cursor { display: none !important; }
+          body, a, button, input, textarea, select { cursor: auto !important; }
+        }
       `}</style>
     </>
   );
@@ -419,7 +424,15 @@ export default function Home() {
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/65 via-black/30 to-black/65" />
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 sm:py-16">
-          <h1 className="text-[9vw] sm:text-6xl font-black leading-tight">
+          <h1
+            className="font-black leading-tight"
+            style={{
+              // Scales to any device: never smaller than 28px, grows with viewport, caps at 56px
+              fontSize: "clamp(28px, 7.5vw, 56px)",
+              letterSpacing: "-0.01em",
+              wordBreak: "keep-all",
+            }}
+          >
             Building <GradientText>social-first</GradientText> brands that people actually give a <em>damn</em> about.
           </h1>
           <p className="mx-auto mt-4 sm:mt-5 max-w-2xl text-base sm:text-lg text-zinc-200">
@@ -473,7 +486,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* WHAT WE DO (with hover effects + icons) */}
+      {/* WHAT WE DO */}
       <section id="services" className="py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-black">What we <GradientText>do</GradientText></h2>
@@ -503,7 +516,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* OUR APPROACH (match services styling, no red border) */}
+      {/* OUR APPROACH */}
       <section id="approach" className="py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-black">Our <GradientText>approach</GradientText></h2>
