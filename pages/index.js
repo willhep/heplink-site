@@ -185,7 +185,7 @@ const ThemePulse = ({ show }) => {
 /* ---------- Data ---------- */
 const works = [
   {
-    title: "Durham WFC Kit Launch",
+    title: "Durham x Hummel",
     description:
       "Built anticipation with a 10-day teaser plan, player-led reveals, and a cinematic hero cut. We seeded short clips to fan pages and timed the full drop across Reels/TikTok/YouTube Shorts. Result: fans reshared, the drop day post hit strong engagement, and the club reported a healthy lift in shirt sales during the launch window.",
     image: "/images/durham.jpg",
@@ -314,12 +314,12 @@ const aboutTabs = [
   {
     key: "how",
     label: "How we work",
-    copy: "Small team, fast feedback. Shoot days, quick edits, weekly wins. No fluff decks—just useful insights you’ll use.",
+    copy: "Small team, fast feedback, data driven, and useful monthly insights you’ll actually use (like spotify wrapped for your marketing.",
   },
   {
     key: "proof",
     label: "Proof",
-    copy: "Reels that travel, DMs that turn into sales, and reporting that tells you what to do next. That’s the game.",
+    copy: "2M+ views each month, across multiple industries, and reporting that tells you what to do next. That’s the way we do it.",
   },
 ];
 
@@ -425,17 +425,16 @@ export default function Home() {
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 sm:py-16">
           <h1
-            className="font-black leading-tight"
+            className="font-black leading-tight break-words max-w-full"
             style={{
-              // Scales to any device: never smaller than 28px, grows with viewport, caps at 56px
-              fontSize: "clamp(28px, 7.5vw, 56px)",
+              fontSize: "clamp(28px, 7.2vw, 56px)", // <— fits every device
               letterSpacing: "-0.01em",
               wordBreak: "keep-all",
             }}
           >
             Building <GradientText>social-first</GradientText> brands that people actually give a <em>damn</em> about.
           </h1>
-          <p className="mx-auto mt-4 sm:mt-5 max-w-2xl text-base sm:text-lg text-zinc-200">
+          <p className="mx-auto mt-4 sm:mt-5 max-w-xl text-base sm:text-lg text-zinc-200 break-words text-center">
             Social-native strategy, scroll-stopping content, and campaigns that travel. Based in Sunderland. Working anywhere.
           </p>
 
